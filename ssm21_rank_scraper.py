@@ -47,22 +47,42 @@ def main(save=True, verbose=True, detect_min_pts=True, workers=WORKERS, sheet_na
     if detect_min_pts:
         min_pts = ranking[ranking['Specializzazione'].astype(bool)].groupby(['Specializzazione', 'Sede', 'Contratto'], as_index=False, ).min()[
             ['Specializzazione', 'Sede', 'Contratto', '#', 'Tot']]
+        min_pts_all_long = ranking[ranking['Specializzazione'].astype(bool)].groupby(['Specializzazione', 'Sede'], as_index=False, ).min()[
+            ['Specializzazione', 'Sede', '#', 'Tot']]
+        min_pts_all = min_pts_all_long.pivot(
+            index='Specializzazione', columns='Sede', values='Tot')
+        min_pos_all = min_pts_all_long.pivot(
+            index='Specializzazione', columns='Sede', values='#')
+        min_pts_stat_long = ranking[ranking['Contratto'] == 'STAT'].groupby(['Specializzazione', 'Sede'], as_index=False, ).min()[
+            ['Specializzazione', 'Sede', '#', 'Tot']]
+        min_pts_stat = min_pts_stat_long.pivot(
+            index='Specializzazione', columns='Sede', values='Tot')
+        min_pos_stat = min_pts_stat_long.pivot(
+            index='Specializzazione', columns='Sede', values='#')
     if save:
         kwargs = {}
-        if 'graduatoria.xlsx' in os.listdir():
+        if 'graduatoria_2021.xlsx' in os.listdir():
             kwargs['mode'] = 'a'
             kwargs['if_sheet_exists'] = 'replace'
-        with pd.ExcelWriter('graduatoria.xlsx', **kwargs) as writer:
+        with pd.ExcelWriter('graduatoria_2021.xlsx', **kwargs) as writer:
             ranking.to_excel(writer, index=False,
                              sheet_name=sheet_name, float_format='%.2f')
 
         kwargs = {}
-        if 'min_pts.xlsx' in os.listdir():
+        if 'min_pts_2021.xlsx' in os.listdir():
             kwargs['mode'] = 'a'
             kwargs['if_sheet_exists'] = 'replace'
-        with pd.ExcelWriter('min_pts.xlsx') as writer:
+        with pd.ExcelWriter('min_pts_2021.xlsx') as writer:
             min_pts.to_excel(writer, index=False,
-                             sheet_name=sheet_name, float_format='%.2f')
+                             sheet_name=f'{sheet_name}_min_pts_long', float_format='%.2f')
+            min_pts_all.to_excel(writer,
+                                 sheet_name=f'{sheet_name}_min_pts_all', float_format='%.2f')
+            min_pos_all.to_excel(writer,
+                                 sheet_name=f'{sheet_name}_min_pos_all', float_format='%.2f')
+            min_pts_stat.to_excel(writer,
+                                  sheet_name=f'{sheet_name}_min_pts_stat', float_format='%.2f')
+            min_pos_stat.to_excel(writer,
+                                  sheet_name=f'{sheet_name}_min_pos_stat', float_format='%.2f')
 
         if verbose:
             print('Saved.')

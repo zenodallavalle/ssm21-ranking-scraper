@@ -97,11 +97,8 @@ def prepare_data(tds):
             span = tds[i].find('span')
             if span:
                 children = list(span.children)
-                value = children[0].strip()
-                child_span = children[1]
-                value += ' - '
-                value += child_span.text.strip().upper()
-                row[c] = value
+                row[c] = children[0].strip()
+                row['Contratto'] = children[1].text.strip().upper()
             else:
                 row[c] = tds[i].text.strip()
         else:
@@ -187,12 +184,10 @@ def grab(email, password=None, authentication_link=None, workers=None):
     popped = cols.pop()
     cols.insert(2, popped)
     df = df[cols].copy()
-    df['Specializzazione'] = df['Note'].map(lambda x: x.rsplit(
-        '-', 1)[0].rsplit(',', 1)[0].strip() if x else '')
-    df['Sede'] = df['Note'].map(lambda x: x.rsplit(
-        '-', 1)[0].rsplit(',', 1)[1].strip() if x else '')
-    df['Contratto'] = df['Note'].map(
-        lambda x: x.rsplit('-', 1)[-1].strip() if x else '')
+    df['Specializzazione'] = df['Note'].map(
+        lambda x: x.rsplit(',', 1)[0].strip() if x else '')
+    df['Sede'] = df['Note'].map(lambda x: x.rsplit(',', 1)[
+                                1].strip() if x else '')
     # rename index col "index"
     df.rename_axis(['index'], axis=1, inplace=True)
     return df

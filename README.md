@@ -49,4 +49,4 @@ _Per poter visualizzare la graduatoria è necessario possedere un account univer
 
 5. Run
 
-   <code>python grabber-mp.py</code>
+   <code>python ssm21_rank_scraper.py</code>

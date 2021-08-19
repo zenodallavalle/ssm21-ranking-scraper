@@ -39,7 +39,7 @@ _Per poter visualizzare la graduatoria è necessario possedere un account univer
 
    <code>pip install -r requirements.txt</code>
 
-3. Setup <code>credentials.json</code> using <code>credentials_model.json</code>
+3. Edit `credentials_model.json` and rename it to `credentials.json`:
 
    1. Edit email
 

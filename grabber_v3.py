@@ -127,34 +127,6 @@ def scan_page(session, n, request_status_callback=lambda r: r.status_code, empty
             rows.append(prepare_data(tds))
     return pd.DataFrame(rows)
 
-# DEPRECATED
-#
-# def scan_page_queue(session, pre_q, post_q, finished_q, error_q):
-#     '''
-#     Read the number of the page to analyze from the queue then start analyzing it.
-#     If status_code returned from the get method != 200 an error in put in error queue and the page number is put in pre_q to be reanalyzed.
-#     If there are no rows then the page is empty so add an element to finished_q and exits execution.
-#     If the page is parsed correctly a pd.DataFrame instance containing the elements in the page is put in post_q.
-#     '''
-#     while True:
-#         n = pre_q.get()
-#         r = session.get(gen_url_paged(n))
-#         if r.status_code != 200:
-#             error_q.put(r.status_code)
-#             pre_q.put(n)
-#         else:
-#             bs = BS(r.content, 'lxml')
-#             trs = bs.find_all('tr')
-#             rows = []
-#             if len(trs) < 2:
-#                 finished_q.put(True)
-#                 return
-#             for tr in trs:
-#                 tds = tr.findChildren('td')
-#                 if len(tds) > 0:
-#                     rows.append(prepare_data(tds))
-#             post_q.put(pd.DataFrame(rows))
-
 
 def grab(email, password=None, authentication_link=None, workers=None):
     # Number of _workers is equal to passed argument workers or if None is equal to cpu_count()

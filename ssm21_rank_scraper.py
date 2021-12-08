@@ -1,4 +1,5 @@
 import json
+from multiprocessing import cpu_count
 import os
 import grabber_v3
 import pandas as pd
@@ -7,7 +8,8 @@ WORKERS = None
 SHEET_NAME = 'first-round'
 
 
-def scrape(save=True, verbose=True, detect_min_pts=False, workers=WORKERS, sheet_name=SHEET_NAME):
+def scrape(save=True, verbose=True, detect_min_pts=True, sheet_name=SHEET_NAME):
+    workers=WORKERS or cpu_count()
     # If save == False will return ranking as pd.DataFrame
     write_link = False
     if not 'credentials.json' in os.listdir():
@@ -37,15 +39,17 @@ def scrape(save=True, verbose=True, detect_min_pts=False, workers=WORKERS, sheet
             }, f)
         print('authentication_link written in credentials.json')
     if verbose:
-        print('Starting process')
+        print(f'Starting process with {workers} processes')
     ranking = grabber_v3.grab(email, password, authentication_link, workers)
     if verbose:
-        print('Done, downloaded', len(ranking), 'entries.')
-        print('Displaying the first 5 and the last 5 entries.')
-        print(ranking.head())
-        print(ranking.tail())
+        print('OK, downloaded', len(ranking), 'entries.')
     if detect_min_pts:
-        min_pts = ranking[ranking['Specializzazione'].astype(bool)].groupby(['Specializzazione', 'Sede', 'Contratto'], as_index=False, ).min()[
+        min_pts = ranking[ranking['Specializzazione'].astype(bool)].groupby(['Specializzazione', 'Sede', 'Contratto'], as_index=False, ).aggregate(
+            {
+                '#':max,
+                'Tot':min
+            }
+        )[
             ['Specializzazione', 'Sede', 'Contratto', '#', 'Tot']]
     if save:
         kwargs = {}

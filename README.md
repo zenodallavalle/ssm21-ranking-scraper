@@ -33,7 +33,7 @@ _Per poter visualizzare la graduatoria è necessario possedere un account univer
 
    on windows <code>env\Scripts\activate</code>
 
-   on linux <code>. env\Scripts\activate</code>
+   on linux or mac os <code>. env/Scripts/activate</code>
 
 2. Install dependancies with
 
